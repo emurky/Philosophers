@@ -6,12 +6,12 @@ NAME				= philo
 
 CC 					= gcc
 RM 					= rm -f
-CFLAGS				= -Wall -Wextra -Werror -g -fsanitize=address
+CFLAGS				= -Wall -Wextra -Werror -pthread -g -fsanitize=address
 CPPFLAGS			= -MMD -I. -I./includes
 
 all:				$(NAME)
 
-$(NAME):			$(OBJS)
+$(NAME):			$(OBJS) Makefile
 					$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 -include			$(DEPS)
