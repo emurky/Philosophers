@@ -1,25 +1,44 @@
 #include "philo.h"
 
-#define PH_COUNT	100
+#define PH_COUNT	500
+
+long	gettime_in_ms(void)
+{
+	struct timeval		s_time;
+	long				current_time_in_milliseconds;
+
+	if (gettimeofday(&s_time, NULL))
+	{
+		return (-1);
+	}
+	current_time_in_milliseconds = s_time.tv_sec * 1000 + s_time.tv_usec / 1000;
+	return (current_time_in_milliseconds);
+}
 
 void	*test(void *arg)
 {
 	t_philo	*ph = arg;
+	// int		count = 0;
 
 	for (int i = 0; i < 100000; i++) {
+		// count++;
 		pthread_mutex_lock(&ph->mutex);
 		ph->sum++;
 		pthread_mutex_unlock(&ph->mutex);
 	}
+	// pthread_mutex_lock(&ph->mutex);
+	// ph->sum += count;
+	// pthread_mutex_unlock(&ph->mutex);
 	return (NULL);
 }
 
 int	main(void)
 {
-	pthread_t	philos[PH_COUNT];
-	t_philo		ph;
-	int			i = 0;
-
+	pthread_t		philos[PH_COUNT];
+	t_philo			ph;
+	int				i = 0;
+	long long		time = 0;
+	
 	pthread_mutex_init(&ph.mutex, NULL);
 	ph.sum = 0;
 	while (i < PH_COUNT)

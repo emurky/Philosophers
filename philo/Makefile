@@ -1,4 +1,5 @@
-SRCS				= philo.c
+SRCS				=	philo.c \
+						libft.c
 OBJS				= $(SRCS:.c=.o)
 DEPS				= $(SRCS:.c=.d)
 
@@ -15,6 +16,8 @@ $(NAME):			$(OBJS) Makefile
 					$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 -include			$(DEPS)
+
+bonus:				all
 
 clean:
 					$(RM) $(OBJS) $(DEPS)
