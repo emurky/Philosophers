@@ -1,5 +1,6 @@
 SRCS				=	philo.c \
-						libft.c
+						libft.c \
+						utils.c
 OBJS				= $(SRCS:.c=.o)
 DEPS				= $(SRCS:.c=.d)
 
@@ -7,7 +8,7 @@ NAME				= philo
 
 CC 					= gcc
 RM 					= rm -f
-CFLAGS				= -Wall -Wextra -Werror -pthread -g -fsanitize=address
+CFLAGS				= -Wall -Wextra -Werror -pthread #-g -fsanitize=address
 CPPFLAGS			= -MMD -I. -I./includes
 
 all:				$(NAME)
