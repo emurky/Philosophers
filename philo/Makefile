@@ -8,7 +8,7 @@ NAME				= philo
 
 CC 					= gcc
 RM 					= rm -f
-CFLAGS				= -Wall -Wextra -Werror -pthread #-g -fsanitize=address
+CFLAGS				= -Wall -Wextra -Werror -pthread -g -fsanitize=address
 CPPFLAGS			= -MMD -I. -I./includes
 
 all:				$(NAME)
@@ -36,3 +36,4 @@ sc:
 
 #.SILENT:
 # leaks --atExit -- ./philo
+# leaks --atExit -- ./philo 1 2 3 4 5
