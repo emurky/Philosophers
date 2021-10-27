@@ -15,7 +15,7 @@ size_t	gettime_in_ms(void)
 	return (current_time_in_milliseconds);
 }
 
-void	sleep_wrapper(size_t ms)
+void	usleep_wrapper(size_t ms)
 {
 	size_t	current_time;
 
@@ -28,7 +28,17 @@ void	print_status(t_philo *philo, char *status)
 {
 	pthread_mutex_lock(&philo->all->print_mtx);
 	printf("%zu %zu %s\n", gettime_in_ms() - philo->all->start_time, philo->id, status);
-	pthread_mutex_unlock(&philo->all->print_mtx);
+	// printf("%lld\n", philo->all->start_time);
+	// pthread_mutex_lock(&philo->death_mtx);
+	if (!philo->dead)
+	{
+		pthread_mutex_unlock(&philo->all->print_mtx);
+	}
+	// pthread_mutex_unlock(&philo->death_mtx);
+	// else
+	// {
+	// 	printf("tut\n");
+	// }
 }
 
 bool	parser(int argc, char **argv, t_all *args)
@@ -64,66 +74,68 @@ void	*philo_thread(void *arg)
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == ODD)
-		sleep_wrapper(philo->all->time_to_eat);
-	print_status(philo, STATUS_FORK);
+		usleep_wrapper(philo->all->time_to_eat);
+	// print_status(philo, STATUS_FORK);
 	while (true)
 	{
+			// pthread_mutex_lock(&philo->death_mtx);
+			// if (philo->all->finish == true)
+			// 	break ;
+			// pthread_mutex_unlock(&philo->death_mtx);
+		pthread_mutex_lock(philo->left_fork_mtx);
+		print_status(philo, STATUS_FORK);
+		pthread_mutex_lock(philo->right_fork_mtx);
+		print_status(philo, STATUS_FORK);
+		pthread_mutex_lock(&philo->last_meal_mtx);
+		philo->last_eating_time = gettime_in_ms();
+		pthread_mutex_unlock(&philo->last_meal_mtx);
+		print_status(philo, STATUS_EAT);
+		usleep_wrapper(philo->all->time_to_eat);
+		pthread_mutex_unlock(philo->right_fork_mtx);
+		pthread_mutex_unlock(philo->left_fork_mtx);
+		pthread_mutex_lock(&philo->death_mtx);
+		
+		if (philo->all->meals > 0 && philo->meals == philo->all->meals)
+			break ;
+		philo->meals++;
 
+		pthread_mutex_unlock(&philo->death_mtx);
+		print_status(philo, STATUS_SLEEP);
+		usleep_wrapper(philo->all->time_to_sleep);
+		print_status(philo, STATUS_THINK);
 	}
 	return (NULL);
 }
 
-bool	philos_init(t_all *all, t_philo **philos)
+t_philo	*philos_init(t_all *all)
 {
-	unsigned int	i;
-	// t_philo			*philos;
-	pthread_mutex_t	*forks;
+	size_t		i;
+	t_philo		*philos;
 
 	i = 0;
-	*philos = malloc(sizeof(t_philo) * all->philo_count);
-	forks = malloc(sizeof(pthread_mutex_t) * all->philo_count);
-	if (!(*philos) || !forks)
-		return (print_error(ERR_MALLOC));
+	all->finish = false;
+	philos = malloc(sizeof(t_philo) * all->philo_count);
+	all->forks = malloc(sizeof(pthread_mutex_t) * all->philo_count);
+	if (!philos || !all->forks)
+		return ((t_philo *)print_error(ERR_MALLOC));
 	while (i < all->philo_count)
 	{
-		if (pthread_mutex_init(&forks[i], NULL))
-			return (print_error(ERR_MTX_INIT));
-		if (pthread_mutex_init(&(*philos)[i].death_mtx, NULL))
-			return (print_error(ERR_MTX_INIT));
-		(*philos)[i].left_fork_mtx = &forks[i];
-		(*philos)[i].right_fork_mtx = &forks[(i + 1) % all->philo_count];
-		(*philos)[i].id = i + 1;
-		(*philos)[i].meals = all->meals;
-		(*philos)[i].all = all;
-		(*philos)[i].dead = false;
-		// if (pthread_create(&(*philos)[i].thread, NULL, &philo_thread, &philos[i]))
-		// 	return(print_error(ERR_THRD_CRT));
-		// if (pthread_detach((*philos)[i].thread))
-		// 	return(print_error(ERR_THRD_DTC));
+		if (pthread_mutex_init(&all->forks[i], NULL))
+			return ((t_philo *)print_error(ERR_MTX_INIT));
+		if (pthread_mutex_init(&philos[i].last_meal_mtx, NULL))
+			return ((t_philo *)print_error(ERR_MTX_INIT));
+		if (pthread_mutex_init(&philos[i].death_mtx, NULL))
+			return ((t_philo *)print_error(ERR_MTX_INIT));
+		philos[i].left_fork_mtx = &all->forks[i];
+		philos[i].right_fork_mtx = &all->forks[(i + 1) % all->philo_count];
+		philos[i].id = i + 1;
+		philos[i].meals = 1;
+		philos[i].all = all;
+		philos[i].dead = false;
+		philos[i].last_eating_time = all->start_time;
 		i++;
 	}
-	// i = 0;
-	// while (i < all->philo_count)
-	// {
-	// 	if (pthread_mutex_init(&forks[i], NULL))
-	// 		return (print_error(ERR_MTX_INIT));
-	// 	if (pthread_mutex_init(&(*philos)[i].death_mtx, NULL))
-	// 		return (print_error(ERR_MTX_INIT));
-	// 	(*philos)[i].left_fork_mtx = &forks[i];
-	// 	(*philos)[i].right_fork_mtx = &forks[(i + 1) % all->philo_count];
-	// 	(*philos)[i].id = i + 1;
-	// 	(*philos)[i].meals = all->meals;
-	// 	(*philos)[i].all = all;
-	// 	// if (pthread_create(&(*philos)[i].thread, NULL, &philo_thread, &philos[i]))
-	// 	// 	return(print_error(ERR_THRD_CRT));
-	// 	// if (pthread_detach((*philos)[i].thread))
-	// 	// 	return(print_error(ERR_THRD_DTC));
-	// 	i++;
-	// }
-	// all->philos = philos;
-	all->forks = forks;
-
-	return (true);
+	return (philos);
 }
 
 bool	clean_philos(t_all *all, t_philo *philos)
@@ -135,9 +147,11 @@ bool	clean_philos(t_all *all, t_philo *philos)
 		return (print_error(ERR_MTX_DSTR));
 	while (i < all->philo_count)
 	{
-		if (pthread_mutex_destroy(&philos[i].death_mtx))
-			return (print_error(ERR_MTX_DSTR));
 		if (pthread_mutex_destroy(&all->forks[i]))
+			return (print_error(ERR_MTX_DSTR));
+		if (pthread_mutex_destroy(&philos[i].last_meal_mtx))
+			return (print_error(ERR_MTX_DSTR));
+		if (pthread_mutex_destroy(&philos[i].death_mtx))
 			return (print_error(ERR_MTX_DSTR));
 		i++;
 	}
@@ -162,39 +176,78 @@ bool	threads_init(t_philo *philos)
 	return (true);
 }
 
+void	check_philos(t_philo *philos, t_all *all)
+{
+	size_t	i;
+
+	
+	while (true)
+	{
+		i = 0;
+		while (i < all->philo_count)
+		{
+			pthread_mutex_lock(&philos[i].last_meal_mtx);
+			// printf("%d truth?\n", gettime_in_ms() - philos[i].last_eating_time > all->time_to_die);
+			if (gettime_in_ms() - philos[i].last_eating_time > all->time_to_die)
+			{
+				pthread_mutex_lock(&philos[i].death_mtx);
+				philos[i].dead = true;
+				print_status(&philos[i], STATUS_DEATH);
+				all->finish = true;
+				pthread_mutex_unlock(&philos[i].death_mtx);
+				
+				return ;
+			}
+			pthread_mutex_unlock(&philos[i].last_meal_mtx);
+			pthread_mutex_lock(&philos[i].death_mtx);
+			if (philos[i].meals == all->meals)
+			{
+				all->finish = true;
+				
+				return ;
+			}
+			pthread_mutex_unlock(&philos[i].death_mtx);
+			i++;
+			
+		}
+		pthread_mutex_lock(&philos[i].death_mtx);
+		if (all->finish == true && all->meals >= 0)
+		{
+			
+			return ;
+		}
+		pthread_mutex_unlock(&philos[i].death_mtx);
+		
+	}
+	// printf("tuuut\n");
+}
+
 int	main(int argc, char **argv)
 {
 	t_all			all;
 	t_philo			*philos;
 
-	if (!parser(argc, argv, &all) || !philos_init(&all, &philos))
+	if (!parser(argc, argv, &all))
 		return (1);
 
-	// for (int i = 0; i < 5; i++) {
-	// 	printf("%zu id from main\n", philos[i].id);
-	// }
+	philos = philos_init(&all);
+	if (!philos)
+		return (1);
 
 	threads_init(philos);
 
-// ssize_t i =0;
-// 	while (i < all.philo_count)
-// 	{
-// 		if (pthread_create(&philos[i].thread, NULL, &philo_thread, &philos[i]))
-// 			return(print_error(ERR_THRD_CRT));
-// 		if (pthread_detach(philos[i].thread))
-// 			return(print_error(ERR_THRD_DTC));
-// 		i++;
-// 	}
-	// printf("%d %d %d %d %d\n", all.philo_count, all.time_to_die, all.time_to_eat, all.time_to_sleep, all.meals);
+check_philos(philos, &all);
+sleep(3);
 
-	sleep(5);
+	// for (size_t i = 0; i < all.philo_count; i++) {
+	// 	pthread_join(philos[i].thread, NULL);
+	// }
 
-	for (size_t i = 0; i < all.philo_count; i++) {
-		pthread_join(philos[i].thread, NULL);
-	}
-
-	if (!clean_philos(&all, philos))
-		return (1);
+	// usleep_wrapper(2000);
+	// pthread_mutex_unlock(&philos[check].death_mtx);
+	// pthread_mutex_unlock(&all.print_mtx);
+	// if (!clean_philos(&all, philos))
+	// 	return (1);
 
 	return (0);
 }

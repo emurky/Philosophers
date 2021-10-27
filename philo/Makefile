@@ -8,7 +8,7 @@ NAME				= philo
 
 CC 					= gcc
 RM 					= rm -f
-CFLAGS				= -Wall -Wextra -Werror -pthread -g -fsanitize=address
+CFLAGS				= -Wall -Wextra -Werror -pthread #-g -fsanitize=thread
 CPPFLAGS			= -MMD -I. -I./includes
 
 all:				$(NAME)
