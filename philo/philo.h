@@ -14,6 +14,9 @@
 # define EVEN			0
 # define ODD			1
 
+# define DEAD			0
+# define ALIVE			1
+
 # define STATUS_FORK	"has taken a fork"
 # define STATUS_EAT		"is eating"
 # define STATUS_SLEEP	"is sleeping"
@@ -39,6 +42,7 @@ typedef struct s_all
 	size_t				start_time;
 	pthread_mutex_t		print_mtx;
 	bool				finish;
+	pthread_mutex_t		finish_mtx;
 	// t_philo				*philos;
 	pthread_mutex_t		*forks;
 
@@ -51,7 +55,7 @@ typedef struct s_philo
 	pthread_mutex_t		death_mtx;
 	pthread_mutex_t		*left_fork_mtx;
 	pthread_mutex_t		*right_fork_mtx;
-	pthread_mutex_t		last_meal_mtx;
+	// pthread_mutex_t		finish_mtx;
 	size_t				last_eating_time;
 	int					meals;
 	size_t				id;
