@@ -23,14 +23,15 @@
 # define STATUS_THINK	"is thinking"
 # define STATUS_DEATH	"died"
 
-# define ERR_ARGS		"Wrong number of arguments. Must be 4 or 5\n"
-# define ERR_NUM		"One of arguments is not numerical. Arguments must be \
-positive integers\n"
-# define ERR_MALLOC		"Malloc error\n"
-# define ERR_MTX_INIT	"Mutex initialisation\n"
-# define ERR_MTX_DSTR	"Mutex destroying\n"
-# define ERR_THRD_CRT	"Thread creating\n"
-# define ERR_THRD_DTC	"Thread detaching\n"
+# define ERR_PHILO		"At least one philosopher must exist.\n"
+# define ERR_ARGS		"Wrong number of arguments. Must be 4 or 5.\n"
+# define ERR_NUM		"Arguments must be numerical strings.\n"
+# define ERR_MALLOC		"Malloc error.\n"
+# define ERR_MTX_INIT	"Mutex initialisation.\n"
+# define ERR_MTX_DSTR	"Mutex destroying.\n"
+# define ERR_THRD_CRT	"Thread creating.\n"
+# define ERR_THRD_DTC	"Thread detaching.\n"
+# define ERR_TIME		"Time arguments must be at least 10 ms.\n"
 
 typedef struct s_all
 {
