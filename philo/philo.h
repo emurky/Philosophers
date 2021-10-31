@@ -14,8 +14,8 @@
 # define EVEN			0
 # define ODD			1
 
-# define DEAD			0
-# define ALIVE			1
+# define DEAD			1
+# define ALIVE			0
 
 # define STATUS_FORK	"has taken a fork"
 # define STATUS_EAT		"is eating"
