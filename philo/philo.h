@@ -9,13 +9,10 @@
 # include <sys/time.h>
 # include <pthread.h>
 
-# define THREADS_LIMIT	420
+# define THREADS_LIMIT	421
 
 # define EVEN			0
 # define ODD			1
-
-# define DEAD			1
-# define ALIVE			0
 
 # define STATUS_FORK	"has taken a fork"
 # define STATUS_EAT		"is eating"
@@ -29,48 +26,69 @@
 # define ERR_MALLOC		"Malloc error.\n"
 # define ERR_MTX_INIT	"Mutex initialisation.\n"
 # define ERR_MTX_DSTR	"Mutex destroying.\n"
-# define ERR_THRD_CRT	"Thread creating.\n"
-# define ERR_THRD_DTC	"Thread detaching.\n"
+# define ERR_THRD_CRT	"Thread initialisation.\n"
+# define ERR_THRD_JOIN	"Thread joining.\n"
 # define ERR_TIME		"Time arguments must be at least 10 ms.\n"
+# define ERR_THREADS	"There are too many threads. \
+You can change THREADS_LIMIT in a header file.\n"
 
 typedef struct s_all
 {
-	unsigned int		philo_count;
-	unsigned int		time_to_die;
-	unsigned int		time_to_eat;
-	unsigned int		time_to_sleep;
+	size_t				philo_count;
+	size_t				time_to_die;
+	size_t				time_to_eat;
+	size_t				time_to_sleep;
 	int					meals;
 	size_t				start_time;
-	pthread_mutex_t		print_mtx;
 	bool				finish;
 	pthread_mutex_t		finish_mtx;
-	// t_philo				*philos;
 	pthread_mutex_t		*forks;
-
-	int					sum;
 }				t_all;
 
 typedef struct s_philo
 {
+	size_t				id;
 	pthread_t			thread;
 	pthread_mutex_t		death_mtx;
 	pthread_mutex_t		*left_fork_mtx;
 	pthread_mutex_t		*right_fork_mtx;
-	// pthread_mutex_t		finish_mtx;
 	size_t				last_eating_time;
 	int					meals;
-	size_t				id;
-
 	bool				dead;
 	t_all				*all;
-
-	int					sum;
 }				t_philo;
 
+
+/*		utils.c */
+bool	clean_philos(t_all *all, t_philo *philos);
+size_t	gettime_in_ms(void);
+void	usleep_wrapper(size_t ms);
+void	print_status(t_philo *philo, char *status);
+bool	print_error(char *err_str);
+
+/*		threads.c */
+bool	threads_init(t_philo *philos, t_all *all);
+void	*philo_thread(void *arg);
+bool	eating_time(t_philo *philo);
+void	sleeping_and_maybe_thinking(t_philo *philo);
+bool	threads_finish(t_philo *philos, t_all *all);
+
+
+/*		libft.c */
+bool		args_are_numeric(char **argv);
 size_t			ft_strlen(char *str);
-bool			print_error(char *err_str);
-bool			str_isnumeric(char *str);
-char			*ft_itoa(int n);
 int				ft_atoi(const char *str);
+
+
+
+
+int main();
+
+/*		philo.c */
+bool	parser(int argc, char **argv, t_all *args);
+t_philo	*philos_init(t_all *all);
+void	check_philos(t_philo *philos, t_all *all);
+void	is_dead(t_philo *philo, t_all *all);
+
 
 #endif

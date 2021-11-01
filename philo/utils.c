@@ -7,15 +7,24 @@ bool	print_error(char *err_str)
 	return (false);
 }
 
-bool	str_isnumeric(char *str)
+bool	args_are_numeric(char **argv)
 {
-	if (!str)
+	int		i;
+	int		j;
+
+	if (!argv)
 		return (false);
-	while (*str)
+	j = 1;
+	while (argv[j])
 	{
-		if (!('0' <= *str && *str <= '9'))
-			return (false);
-		str++;
+		i = 0;
+		while (argv[j][i])
+		{
+			if (!('0' <= argv[j][i] && argv[j][i] <= '9'))
+				return (false);
+			i++;
+		}
+		j++;
 	}
 	return (true);
 }
