@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: emurky <emurky@student.21-school.ru>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/02 01:24:12 by emurky            #+#    #+#             */
+/*   Updated: 2021/11/02 01:24:15 by emurky           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 bool	clean_philos(t_all *all, t_philo *philos)
@@ -22,8 +34,8 @@ bool	clean_philos(t_all *all, t_philo *philos)
 
 size_t	gettime_in_ms(void)
 {
-	struct timeval		s_time;
-	long				current_time_in_milliseconds;
+	struct timeval	s_time;
+	long			current_time_in_milliseconds;
 
 	gettimeofday(&s_time, NULL);
 	current_time_in_milliseconds = s_time.tv_sec * 1000 + s_time.tv_usec / 1000;

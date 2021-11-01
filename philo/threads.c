@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   threads.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: emurky <emurky@student.21-school.ru>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/02 01:23:40 by emurky            #+#    #+#             */
+/*   Updated: 2021/11/02 01:23:43 by emurky           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 bool	threads_init(t_philo *philos, t_all *all)
@@ -16,7 +28,7 @@ bool	threads_init(t_philo *philos, t_all *all)
 
 void	*philo_thread(void *arg)
 {
-	t_philo		*philo;
+	t_philo	*philo;
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == ODD)

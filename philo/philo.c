@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: emurky <emurky@student.21-school.ru>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/02 01:23:34 by emurky            #+#    #+#             */
+/*   Updated: 2021/11/02 01:23:38 by emurky           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 int	main(int argc, char **argv)
 {
-	t_all			all;
-	t_philo			*philos;
+	t_all		all;
+	t_philo		*philos;
 
 	if (!parser(argc, argv, &all))
 	{
@@ -83,8 +95,8 @@ t_philo	*philos_init(t_all *all)
 
 void	check_philos(t_philo *philos, t_all *all)
 {
-	size_t	i;
-	bool	all_meals_eaten;
+	size_t		i;
+	bool		all_meals_eaten;
 
 	while (true)
 	{
