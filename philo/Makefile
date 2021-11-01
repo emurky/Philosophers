@@ -1,6 +1,7 @@
 SRCS				=	philo.c \
-						libft.c \
-						utils.c
+						threads.c \
+						utils.c \
+						libft.c
 OBJS				= $(SRCS:.c=.o)
 DEPS				= $(SRCS:.c=.d)
 
@@ -9,7 +10,7 @@ NAME				= philo
 CC 					= gcc
 RM 					= rm -f
 CFLAGS				= -Wall -Wextra -Werror -pthread #-g -fsanitize=thread
-CPPFLAGS			= -MMD -I. -I./includes
+CPPFLAGS			= -MMD -I.
 
 all:				$(NAME)
 
@@ -35,5 +36,4 @@ sc:
 					sc
 
 #.SILENT:
-# leaks --atExit -- ./philo
-# leaks --atExit -- ./philo 1 2 3 4 5
+# leaks --atExit -- ./philo 5 800 200 200 7

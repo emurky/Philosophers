@@ -58,37 +58,29 @@ typedef struct s_philo
 	t_all				*all;
 }				t_philo;
 
+/*				philo.c */
+bool			parser(int argc, char **argv, t_all *args);
+t_philo			*philos_init(t_all *all);
+void			check_philos(t_philo *philos, t_all *all);
+void			is_dead(t_philo *philo, t_all *all);
 
-/*		utils.c */
-bool	clean_philos(t_all *all, t_philo *philos);
-size_t	gettime_in_ms(void);
-void	usleep_wrapper(size_t ms);
-void	print_status(t_philo *philo, char *status);
-bool	print_error(char *err_str);
+/*				threads.c */
+bool			threads_init(t_philo *philos, t_all *all);
+void			*philo_thread(void *arg);
+bool			eating_time(t_philo *philo);
+void			sleeping_and_maybe_thinking(t_philo *philo);
+bool			threads_finish(t_philo *philos, t_all *all);
 
-/*		threads.c */
-bool	threads_init(t_philo *philos, t_all *all);
-void	*philo_thread(void *arg);
-bool	eating_time(t_philo *philo);
-void	sleeping_and_maybe_thinking(t_philo *philo);
-bool	threads_finish(t_philo *philos, t_all *all);
+/*				utils.c */
+bool			clean_philos(t_all *all, t_philo *philos);
+size_t			gettime_in_ms(void);
+void			usleep_wrapper(size_t ms);
+void			print_status(t_philo *philo, char *status);
+bool			print_error(char *err_str);
 
-
-/*		libft.c */
-bool		args_are_numeric(char **argv);
+/*				libft.c */
+bool			args_are_numeric(char **argv);
 size_t			ft_strlen(char *str);
 int				ft_atoi(const char *str);
-
-
-
-
-int main();
-
-/*		philo.c */
-bool	parser(int argc, char **argv, t_all *args);
-t_philo	*philos_init(t_all *all);
-void	check_philos(t_philo *philos, t_all *all);
-void	is_dead(t_philo *philo, t_all *all);
-
 
 #endif

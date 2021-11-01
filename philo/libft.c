@@ -1,5 +1,27 @@
 #include "philo.h"
 
+bool	args_are_numeric(char **argv)
+{
+	int		i;
+	int		j;
+
+	if (!argv)
+		return (false);
+	j = 1;
+	while (argv[j])
+	{
+		i = 0;
+		while (argv[j][i])
+		{
+			if (!('0' <= argv[j][i] && argv[j][i] <= '9'))
+				return (false);
+			i++;
+		}
+		j++;
+	}
+	return (true);
+}
+
 size_t	ft_strlen(char *str)
 {
 	char	*head;
