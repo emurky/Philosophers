@@ -6,7 +6,7 @@
 /*   By: emurky <emurky@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 01:23:34 by emurky            #+#    #+#             */
-/*   Updated: 2021/11/02 01:23:38 by emurky           ###   ########.fr       */
+/*   Updated: 2021/11/02 03:16:14 by emurky           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ bool	parser(int argc, char **argv, t_all *args)
 	if (argc != 5 && argc != 6)
 		return (print_error(ERR_ARGS));
 	if (!args_are_numeric(argv))
-		return (print_error(ERR_ARGS));
+		return (print_error(ERR_NUM));
 	args->philo_count = ft_atoi(argv[1]);
 	args->time_to_die = ft_atoi(argv[2]);
 	args->time_to_eat = ft_atoi(argv[3]);

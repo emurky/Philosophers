@@ -6,7 +6,7 @@
 /*   By: emurky <emurky@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 01:23:40 by emurky            #+#    #+#             */
-/*   Updated: 2021/11/02 01:23:43 by emurky           ###   ########.fr       */
+/*   Updated: 2021/11/02 03:32:56 by emurky           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void	*philo_thread(void *arg)
 
 bool	eating_time(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->death_mtx);
 	if (philo->all->meals > 0 && philo->meals == philo->all->meals)
 	{
 		pthread_mutex_unlock(&philo->death_mtx);
