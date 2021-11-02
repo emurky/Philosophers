@@ -68,14 +68,14 @@ bool	eating_time(t_philo *philo)
 	pthread_mutex_unlock(&philo->death_mtx);
 	print_status(philo, STATUS_EAT);
 	usleep_wrapper(philo->all->time_to_eat);
-	pthread_mutex_unlock(philo->right_fork_mtx);
-	pthread_mutex_unlock(philo->left_fork_mtx);
 	return (true);
 }
 
 void	sleeping_and_maybe_thinking(t_philo *philo)
 {
 	print_status(philo, STATUS_SLEEP);
+	pthread_mutex_unlock(philo->right_fork_mtx);
+	pthread_mutex_unlock(philo->left_fork_mtx);
 	usleep_wrapper(philo->all->time_to_sleep);
 	print_status(philo, STATUS_THINK);
 	if (philo->all->philo_count % 2 == ODD)

@@ -46,14 +46,6 @@ size_t	ft_strlen(char *str)
 	return (str - head);
 }
 
-static int	int_overflow(int minus)
-{
-	if (minus == 1)
-		return (INT_MAX);
-	else
-		return (INT_MIN);
-}
-
 int	ft_atoi(const char *str)
 {
 	int		minus;
@@ -76,7 +68,7 @@ int	ft_atoi(const char *str)
 	{
 		if (number > INT_MAX / 10
 			|| (number == INT_MAX / 10 && *str - '0' > INT_MAX % 10))
-			return (int_overflow(minus));
+			return (-1);
 		number = number * 10 + *str++ - '0';
 	}
 	return ((int)(number * minus));

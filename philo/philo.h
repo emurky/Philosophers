@@ -35,21 +35,22 @@
 # define ERR_PHILO		"At least one philosopher must exist.\n"
 # define ERR_ARGS		"Wrong number of arguments. Must be 4 or 5.\n"
 # define ERR_NUM		"Arguments must be numerical strings.\n"
+# define ERR_INT_OVRFLW	"Integer overflow in one of arguments.\n"
 # define ERR_MALLOC		"Malloc error.\n"
 # define ERR_MTX_INIT	"Mutex initialisation.\n"
 # define ERR_MTX_DSTR	"Mutex destroying.\n"
 # define ERR_THRD_CRT	"Thread initialisation.\n"
 # define ERR_THRD_JOIN	"Thread joining.\n"
 # define ERR_TIME		"Time arguments must be at least 10 ms.\n"
-# define ERR_THREADS	"There are too many threads. \
+# define ERR_THREADS	"There are too many philos. \
 You can change THREADS_LIMIT in a header file.\n"
 
 typedef struct s_all
 {
 	size_t				philo_count;
-	size_t				time_to_die;
-	size_t				time_to_eat;
-	size_t				time_to_sleep;
+	int					time_to_die;
+	int					time_to_eat;
+	int					time_to_sleep;
 	int					meals;
 	size_t				start_time;
 	bool				finish;
@@ -71,7 +72,7 @@ typedef struct s_philo
 }				t_philo;
 
 /*				philo.c */
-bool			parser(int argc, char **argv, t_all *args);
+bool			parser(char **argv, t_all *args);
 t_philo			*philos_init(t_all *all);
 void			check_philos(t_philo *philos, t_all *all);
 void			is_dead(t_philo *philo, t_all *all);

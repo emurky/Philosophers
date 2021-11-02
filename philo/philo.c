@@ -17,7 +17,12 @@ int	main(int argc, char **argv)
 	t_all		all;
 	t_philo		*philos;
 
-	if (!parser(argc, argv, &all))
+	if (argc != 5 && argc != 6)
+	{
+		print_error(ERR_ARGS);
+		return (1);
+	}
+	if (!parser(argv, &all))
 	{
 		if (!all.meals)
 			return (0);
@@ -36,11 +41,9 @@ int	main(int argc, char **argv)
 	return (0);
 }
 
-bool	parser(int argc, char **argv, t_all *args)
+bool	parser(char **argv, t_all *args)
 {
 	args->meals = -1;
-	if (argc != 5 && argc != 6)
-		return (print_error(ERR_ARGS));
 	if (!args_are_numeric(argv))
 		return (print_error(ERR_NUM));
 	args->philo_count = ft_atoi(argv[1]);
@@ -49,14 +52,16 @@ bool	parser(int argc, char **argv, t_all *args)
 	args->time_to_sleep = ft_atoi(argv[4]);
 	if (argv[5])
 		args->meals = ft_atoi(argv[5]);
+	if (args->time_to_die < 0 || args->time_to_eat < 0
+		|| args->time_to_sleep < 0 || (args->meals < 0 && argv[5]))
+		return (print_error(ERR_INT_OVRFLW));
 	if (!args->meals)
 		return (false);
 	if (!args->philo_count)
 		return (print_error(ERR_PHILO));
 	if (args->philo_count > THREADS_LIMIT)
 		return (print_error(ERR_THREADS));
-	if (args->time_to_die < 10
-		|| args->time_to_eat < 10
+	if (args->time_to_die < 10 || args->time_to_eat < 10
 		|| args->time_to_sleep < 10)
 		return (print_error(ERR_TIME));
 	if (pthread_mutex_init(&args->finish_mtx, NULL))
@@ -105,7 +110,8 @@ void	check_philos(t_philo *philos, t_all *all)
 		while (i < all->philo_count)
 		{
 			pthread_mutex_lock(&philos[i].death_mtx);
-			if (gettime_in_ms() - philos[i].last_eating_time > all->time_to_die)
+			if (gettime_in_ms() - philos[i].last_eating_time
+				> (size_t)all->time_to_die)
 				return (is_dead(&philos[i], all));
 			pthread_mutex_lock(&all->finish_mtx);
 			if (philos[i].meals < all->meals)
