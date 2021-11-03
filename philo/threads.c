@@ -52,12 +52,11 @@ void	*philo_thread(void *arg)
 bool	eating_time(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->death_mtx);
-	if (philo->all->meals > 0 && philo->meals == philo->all->meals)
+	if (philo->meals == philo->all->meals)
 	{
 		pthread_mutex_unlock(&philo->death_mtx);
 		return (false);
 	}
-	philo->meals++;
 	pthread_mutex_unlock(&philo->death_mtx);
 	pthread_mutex_lock(philo->left_fork_mtx);
 	print_status(philo, STATUS_FORK);
@@ -65,6 +64,7 @@ bool	eating_time(t_philo *philo)
 	print_status(philo, STATUS_FORK);
 	pthread_mutex_lock(&philo->death_mtx);
 	philo->last_eating_time = gettime_in_ms();
+	philo->meals++;
 	pthread_mutex_unlock(&philo->death_mtx);
 	print_status(philo, STATUS_EAT);
 	usleep_wrapper(philo->all->time_to_eat);

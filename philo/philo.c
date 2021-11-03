@@ -113,7 +113,7 @@ void	check_philos(t_philo *philos, t_all *all)
 				> (size_t)all->time_to_die)
 				return (is_dead(&philos[i], all));
 			pthread_mutex_lock(&all->finish_mtx);
-			if (philos[i].meals < all->meals || all->philo_count == 1)
+			if (philos[i].meals < all->meals)
 				all_meals_eaten = false;
 			pthread_mutex_unlock(&all->finish_mtx);
 			pthread_mutex_unlock(&philos[i].death_mtx);
