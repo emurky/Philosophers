@@ -20,13 +20,13 @@ bool	clean_philos(t_all *all, t_philo *philos)
 	while (i < all->philo_count)
 	{
 		if (pthread_mutex_destroy(&all->forks[i]))
-			return (print_error(ERR_MTX_DSTR));
+			return (print_error(ERR_MTX_DSTR, philos, all->forks));
 		if (pthread_mutex_destroy(&philos[i].death_mtx))
-			return (print_error(ERR_MTX_DSTR));
+			return (print_error(ERR_MTX_DSTR, philos, all->forks));
 		i++;
 	}
 	if (pthread_mutex_destroy(&all->finish_mtx))
-		return (print_error(ERR_MTX_DSTR));
+		return (print_error(ERR_MTX_DSTR, philos, all->forks));
 	free(philos);
 	free(all->forks);
 	return (true);
@@ -62,8 +62,10 @@ void	print_status(t_philo *philo, char *status)
 	pthread_mutex_unlock(&philo->all->finish_mtx);
 }
 
-bool	print_error(char *err_str)
+bool	print_error(char *err_str, t_philo *philos, void *forks)
 {
+	free(philos);
+	free(forks);
 	write(2, "Error: ", 7);
 	write(2, err_str, ft_strlen(err_str));
 	return (false);

@@ -20,7 +20,7 @@ bool	threads_init(t_philo *philos, t_all *all)
 	while (i < all->philo_count)
 	{
 		if (pthread_create(&philos[i].thread, NULL, &philo_thread, &philos[i]))
-			return (print_error(ERR_THRD_CRT));
+			return (print_error(ERR_THRD_CRT, philos, all->forks));
 		i++;
 	}
 	return (true);
@@ -92,7 +92,7 @@ bool	threads_finish(t_philo *philos, t_all *all)
 	while (i < all->philo_count)
 	{
 		if (pthread_join(philos[i].thread, NULL))
-			return (print_error(ERR_THRD_JOIN));
+			return (print_error(ERR_THRD_JOIN, philos, all->forks));
 		i++;
 	}
 	return (true);

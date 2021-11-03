@@ -13,6 +13,7 @@
 #ifndef PHILO_H
 # define PHILO_H
 
+# include <string.h>
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -89,7 +90,7 @@ bool			clean_philos(t_all *all, t_philo *philos);
 size_t			gettime_in_ms(void);
 void			usleep_wrapper(size_t ms);
 void			print_status(t_philo *philo, char *status);
-bool			print_error(char *err_str);
+bool			print_error(char *err_str, t_philo *philos, void *forks);
 
 /*				libft.c */
 bool			args_are_numeric(char **argv);
