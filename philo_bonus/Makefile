@@ -5,16 +5,16 @@
 #                                                     +:+ +:+         +:+      #
 #    By: emurky <emurky@student.21-school.ru>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/11/02 01:29:02 by emurky            #+#    #+#              #
-#    Updated: 2021/11/02 01:29:10 by emurky           ###   ########.fr        #
+#    Created: 2022/03/07 12:38:19 by emurky            #+#    #+#              #
+#    Updated: 2022/03/07 12:38:26 by emurky           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS				= philo.c threads.c utils.c libft.c
+SRCS				= philo_bonus.c threads.c utils.c libft.c
 OBJS				= $(SRCS:.c=.o)
 DEPS				= $(SRCS:.c=.d)
 
-NAME				= philo
+NAME				= philo_bonus
 
 CC 					= gcc
 RM 					= rm -f
@@ -39,10 +39,10 @@ fclean:				clean
 re:					fclean all
 
 sc:
-					rm -rf *.o *.a */*.o */*.a */*.d *.d 'philo '* philo *.txt
+					rm -rf *.o *.a */*.o */*.a */*.d *.d 'philo_bonus '* philo_bonus *.txt
 
 .PHONY:				all clean fclean re bonus \
 					sc
 
 #.SILENT:
-# leaks --atExit -- ./philo 5 800 200 200 7
+# leaks --atExit -- ./philo_bonus 5 800 200 200 7

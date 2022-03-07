@@ -6,11 +6,11 @@
 /*   By: emurky <emurky@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/02 01:23:40 by emurky            #+#    #+#             */
-/*   Updated: 2021/11/02 03:32:56 by emurky           ###   ########.fr       */
+/*   Updated: 2022/03/07 12:39:10 by emurky           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 bool	threads_init(t_philo *philos, t_all *all)
 {
