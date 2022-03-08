@@ -12,25 +12,25 @@
 
 #include "philo_bonus.h"
 
-bool	clean_philos(t_all *all, t_philo *philos)
-{
-	size_t	i;
+// bool	clean_philos(t_all *all, t_philo *philos)
+// {
+// 	size_t	i;
 
-	i = 0;
-	while (i < all->philo_count)
-	{
-		if (pthread_mutex_destroy(&all->forks[i]))
-			return (print_error(ERR_MTX_DSTR, philos, all->forks));
-		if (pthread_mutex_destroy(&philos[i].death_mtx))
-			return (print_error(ERR_MTX_DSTR, philos, all->forks));
-		i++;
-	}
-	if (pthread_mutex_destroy(&all->finish_mtx))
-		return (print_error(ERR_MTX_DSTR, philos, all->forks));
-	free(philos);
-	free(all->forks);
-	return (true);
-}
+// 	i = 0;
+// 	while (i < all->philo_count)
+// 	{
+// 		if (pthread_mutex_destroy(&all->forks[i]))
+// 			return (print_error(ERR_MTX_DSTR, philos, all->forks));
+// 		if (pthread_mutex_destroy(&philos[i].death_mtx))
+// 			return (print_error(ERR_MTX_DSTR, philos, all->forks));
+// 		i++;
+// 	}
+// 	if (pthread_mutex_destroy(&all->finish_mtx))
+// 		return (print_error(ERR_MTX_DSTR, philos, all->forks));
+// 	free(philos);
+// 	free(all->forks);
+// 	return (true);
+// }
 
 size_t	gettime_in_ms(void)
 {
@@ -53,19 +53,21 @@ void	usleep_wrapper(size_t ms)
 
 void	print_status(t_philo *philo, char *status)
 {
-	pthread_mutex_lock(&philo->all->finish_mtx);
+	// pthread_mutex_lock(&philo->all->finish_mtx);
+	sem_wait(philo->all->finish_sem);
 	if (philo->all->finish == false)
 	{
 		printf("%zu %zu %s\n",
 			gettime_in_ms() - philo->all->start_time, philo->id, status);
 	}
-	pthread_mutex_unlock(&philo->all->finish_mtx);
+	sem_post(philo->all->finish_sem);
+	// pthread_mutex_unlock(&philo->all->finish_mtx);
 }
 
-bool	print_error(char *err_str, t_philo *philos, void *forks)
+bool	print_error(char *err_str, t_philo *philos)
 {
 	free(philos);
-	free(forks);
+	// free(forks);
 	write(2, "Error: ", 7);
 	write(2, err_str, ft_strlen(err_str));
 	return (false);

@@ -21,8 +21,12 @@
 # include <stdbool.h>
 # include <sys/time.h>
 # include <pthread.h>
+# include <signal.h>
+# include <semaphore.h>
 
-# define THREADS_LIMIT	421
+# define THREADS_LIMIT		421
+# define PROCESSES_LIMIT	421
+
 
 # define EVEN			0
 # define ODD			1
@@ -55,17 +59,22 @@ typedef struct s_all
 	int					meals;
 	size_t				start_time;
 	bool				finish;
-	pthread_mutex_t		finish_mtx;
-	pthread_mutex_t		*forks;
+	// pthread_mutex_t		finish_mtx;
+	sem_t				*death_sem;
+	sem_t				*finish_sem;
+	// pthread_mutex_t		*forks;
+	sem_t				*forks;
 }				t_all;
 
 typedef struct s_philo
 {
 	size_t				id;
+	pid_t				pid;
 	pthread_t			thread;
-	pthread_mutex_t		death_mtx;
-	pthread_mutex_t		*left_fork_mtx;
-	pthread_mutex_t		*right_fork_mtx;
+	// pthread_mutex_t		death_mtx;
+	// sem_t				death_sem;
+	// pthread_mutex_t		*left_fork_mtx;
+	// pthread_mutex_t		*right_fork_mtx;
 	size_t				last_eating_time;
 	int					meals;
 	bool				dead;
@@ -90,7 +99,7 @@ bool			clean_philos(t_all *all, t_philo *philos);
 size_t			gettime_in_ms(void);
 void			usleep_wrapper(size_t ms);
 void			print_status(t_philo *philo, char *status);
-bool			print_error(char *err_str, t_philo *philos, void *forks);
+bool			print_error(char *err_str, t_philo *philos);
 
 /*				libft.c */
 bool			args_are_numeric(char **argv);
