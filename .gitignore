@@ -1,0 +1,8 @@
+.*
+*.o
+*.d
+*.a
+*test*
+*.txt
+!/philo
+!/philo_bonus

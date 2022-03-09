@@ -24,12 +24,7 @@
 # include <signal.h>
 # include <semaphore.h>
 
-// # define processes_LIMIT		421
 # define PROCESSES_LIMIT	421
-
-
-# define EVEN			0
-# define ODD			1
 
 # define STATUS_FORK	"has taken a fork"
 # define STATUS_EAT		"is eating"
@@ -47,10 +42,7 @@
 # define ERR_NUM		"Arguments must be numerical strings.\n"
 # define ERR_INT_OVRFLW	"Integer overflow in one of arguments.\n"
 # define ERR_MALLOC		"Malloc error.\n"
-// # define ERR_MTX_INIT	"Mutex initialisation.\n"
-// # define ERR_MTX_DSTR	"Mutex destroying.\n"
-# define ERR_THRD_CRT	"Thread initialisation.\n"
-# define ERR_THRD_JOIN	"Thread joining.\n"
+
 # define ERR_TIME		"Time arguments must be at least 10 ms.\n"
 # define ERR_SEM_VALUE	"Semaphore value overflow\n"
 # define ERR_SEM_LEN	"There are too many philos. \
@@ -66,11 +58,7 @@ typedef struct s_all
 	int					time_to_sleep;
 	int					meals;
 	size_t				start_time;
-	// bool				finish;
-	// pthread_mutex_t		finish_mtx;
-	// sem_t				*death_sem;
 	sem_t				*print_sem;
-	// pthread_mutex_t		*forks;
 	sem_t				*forks;
 }				t_all;
 
@@ -78,44 +66,36 @@ typedef struct s_philo
 {
 	size_t				id;
 	pid_t				pid;
-	// pthread_t			thread;
-	// pthread_mutex_t		death_mtx;
 	sem_t				*death_sem;
 	char				*death_sem_name[SEM_NAME_LEN];
-	// pthread_mutex_t		*left_fork_mtx;
-	// pthread_mutex_t		*right_fork_mtx;
 	size_t				last_eating_time;
 	int					meals;
-	// bool				dead;
 	t_all				*all;
 }				t_philo;
-
-void	exit_error(char *err_str, t_philo *philos);
-size_t	ft_nbrlen(long int n);
 
 /*				philo.c */
 bool			parser(char **argv, t_all *args);
 t_philo			*philos_init(t_all *all);
-void			check_philos(t_philo *philos, t_all *all);
-void			is_dead(t_philo *philo, t_all *all);
+void			clean_philos(t_all *all, t_philo *philos);
 
-/*				threads.c */
+/*				processes.c */
 bool			processes_init(t_philo *philos, t_all *all);
+void			launch_processes_and_check(t_philo *philo);
 void			*philo_thread(void *arg);
-bool			eating_time(t_philo *philo);
-void			sleeping_and_maybe_thinking(t_philo *philo);
 void			processes_finish(t_philo *philos, t_all *all);
 
 /*				utils.c */
-void			clean_philos(t_all *all, t_philo *philos);
 size_t			gettime_in_ms(void);
 void			usleep_wrapper(size_t ms);
 void			print_status(t_philo *philo, char *status);
 bool			print_error(char *err_str, t_philo *philos);
+void			create_semaphore_name(t_philo *philo);
 
 /*				libft.c */
+sem_t			*sem_open_wrapper(const char *name, size_t count);
 bool			args_are_numeric(char **argv);
 size_t			ft_strlen(char *str);
+size_t			ft_nbrlen(long int n);
 int				ft_atoi(const char *str);
 
 #endif

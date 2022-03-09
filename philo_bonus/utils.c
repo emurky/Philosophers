@@ -12,25 +12,6 @@
 
 #include "philo_bonus.h"
 
-void	clean_philos(t_all *all, t_philo *philos)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < all->philo_count)
-	{
-		sem_close(philos[i].death_sem);
-		sem_unlink((char *)philos[i].death_sem_name);
-		i++;
-	}
-	sem_close(all->print_sem);
-	sem_unlink("print_sem");
-	sem_close(all->forks);
-	sem_unlink("forks");
-	free(philos);
-	return ;
-}
-
 size_t	gettime_in_ms(void)
 {
 	struct timeval	s_time;
@@ -53,10 +34,8 @@ void	usleep_wrapper(size_t ms)
 void	print_status(t_philo *philo, char *status)
 {
 	sem_wait(philo->all->print_sem);
-	// if (philo->all->finish == false)
-	// {
-		printf("%zu %zu %s\n", gettime_in_ms() - philo->all->start_time, philo->id, status);
-	// }
+	printf("%zu %zu %s\n", gettime_in_ms()
+		- philo->all->start_time, philo->id, status);
 	if (*status != 'd')
 		sem_post(philo->all->print_sem);
 }
@@ -64,22 +43,31 @@ void	print_status(t_philo *philo, char *status)
 bool	print_error(char *err_str, t_philo *philos)
 {
 	free(philos);
-	// free(forks);
 	write(2, "Error: ", 7);
 	write(2, err_str, ft_strlen(err_str));
 	return (false);
 }
 
-size_t	ft_nbrlen(long int n)
+void	create_semaphore_name(t_philo *philo)
 {
-	size_t	len;
+	size_t		i;
+	size_t		philo_id;
+	char		*name;
+	const char	*prefix = "philo_";
 
-	len = 1;
-	n /= 10;
-	while (n)
+	philo_id = philo->id;
+	name = (char *)philo->death_sem_name;
+	i = 0;
+	while (prefix[i])
 	{
-		n /= 10;
-		len++;
+		name[i] = prefix[i];
+		i++;
 	}
-	return (len);
+	while (philo_id > 0)
+	{
+		name[i] = (philo_id % 10) + '0';
+		philo_id /= 10;
+		i++;
+	}
+	name[i] = '\0';
 }

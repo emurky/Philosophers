@@ -21,6 +21,7 @@ int	main(int argc, char **argv)
 	memset(&all, 0, sizeof(all));
 	if (argc != 5 && argc != 6)
 		return (!print_error(ERR_ARGS, philos));
+	all.meals = -1;
 	if (!parser(argv, &all))
 	{
 		if (!all.meals)
@@ -32,7 +33,6 @@ int	main(int argc, char **argv)
 		return (1);
 	if (!processes_init(philos, &all))
 		return (1);
-	// check_philos(philos, &all);
 	processes_finish(philos, &all);
 	clean_philos(&all, philos);
 	return (0);
@@ -40,7 +40,6 @@ int	main(int argc, char **argv)
 
 bool	parser(char **argv, t_all *args)
 {
-	args->meals = -1;
 	if (!args_are_numeric(argv))
 		return (print_error(ERR_NUM, NULL));
 	args->philo_count = ft_atoi(argv[1]);
@@ -68,36 +67,6 @@ bool	parser(char **argv, t_all *args)
 	return (true);
 }
 
-sem_t	*sem_open_wrapper(const char *name, size_t count)
-{
-	sem_unlink(name);
-	return (sem_open(name, O_CREAT, 0644, count));
-}
-
-void	create_semaphore_name(t_philo *philo)
-{
-	size_t		i;
-	size_t		philo_id;
-	char		*name;
-	const char	*prefix = "philo_";
-
-	philo_id = philo->id;
-	name = (char *)philo->death_sem_name;
-	i = 0;
-	while (prefix[i])
-	{
-		name[i] = prefix[i];
-		i++;
-	}
-	while (philo_id > 0)
-	{
-		name[i] = (philo_id % 10) + '0';
-		philo_id /= 10;
-		i++;
-	}
-	name[i] = '\0';
-}
-
 t_philo	*philos_init(t_all *all)
 {
 	size_t		i;
@@ -107,7 +76,6 @@ t_philo	*philos_init(t_all *all)
 	philos = NULL;
 	philos = malloc(sizeof(t_philo) * all->philo_count);
 	all->forks = sem_open_wrapper("forks", all->philo_count);
-	// all->death_sem = sem_open_wrapper("death_sem", 1);
 	all->print_sem = sem_open_wrapper("print_sem", 1);
 	if (!philos)
 		return ((t_philo *)print_error(ERR_MALLOC, philos));
@@ -118,21 +86,27 @@ t_philo	*philos_init(t_all *all)
 		philos[i].meals = 0;
 		philos[i].all = all;
 		create_semaphore_name(&philos[i]);
-		philos[i].death_sem = sem_open_wrapper((char *)philos[i].death_sem_name, 1);
-		// philos[i].dead = false;
-		// philos[i].last_eating_time = gettime_in_ms();
+		philos[i].death_sem
+			= sem_open_wrapper((char *)philos[i].death_sem_name, 1);
 		i++;
 	}
 	return (philos);
 }
 
-// void	is_dead(t_philo *philo, t_all *all)
-// {
-// 	// philo->dead = true;
-// 	print_status(philo, STATUS_DEATH);
-// 	// sem_wait(all->finish_sem);
-// 	// all->finish = true;
-// 	// sem_post(all->finish_sem);
-// 	sem_post(all->death_sem);
-// 	exit(1);
-// }
+void	clean_philos(t_all *all, t_philo *philos)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < all->philo_count)
+	{
+		sem_close(philos[i].death_sem);
+		sem_unlink((char *)philos[i].death_sem_name);
+		i++;
+	}
+	sem_close(all->print_sem);
+	sem_unlink("print_sem");
+	sem_close(all->forks);
+	sem_unlink("forks");
+	free(philos);
+}

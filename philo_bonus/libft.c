@@ -12,6 +12,12 @@
 
 #include "philo_bonus.h"
 
+sem_t	*sem_open_wrapper(const char *name, size_t count)
+{
+	sem_unlink(name);
+	return (sem_open(name, O_CREAT, 0644, count));
+}
+
 bool	args_are_numeric(char **argv)
 {
 	int		i;
@@ -44,6 +50,20 @@ size_t	ft_strlen(char *str)
 	while (*str)
 		str++;
 	return (str - head);
+}
+
+size_t	ft_nbrlen(long int n)
+{
+	size_t	len;
+
+	len = 1;
+	n /= 10;
+	while (n)
+	{
+		n /= 10;
+		len++;
+	}
+	return (len);
 }
 
 int	ft_atoi(const char *str)

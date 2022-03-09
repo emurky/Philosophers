@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-SRCS				= philo_bonus.c threads.c utils.c libft.c
+SRCS				= philo_bonus.c processes.c utils.c libft.c
 OBJS				= $(SRCS:.c=.o)
 DEPS				= $(SRCS:.c=.d)
 
