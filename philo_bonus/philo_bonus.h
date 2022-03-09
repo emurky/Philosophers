@@ -52,25 +52,25 @@ You can change PROCESSES_LIMIT in a header file.\n"
 
 typedef struct s_all
 {
-	size_t				philo_count;
-	int					time_to_die;
-	int					time_to_eat;
-	int					time_to_sleep;
-	int					meals;
-	size_t				start_time;
-	sem_t				*print_sem;
-	sem_t				*forks;
+	size_t		philo_count;
+	int			time_to_die;
+	int			time_to_eat;
+	int			time_to_sleep;
+	int			meals;
+	size_t		start_time;
+	sem_t		*print_sem;
+	sem_t		*forks;
 }				t_all;
 
 typedef struct s_philo
 {
-	size_t				id;
-	pid_t				pid;
-	sem_t				*death_sem;
-	char				*death_sem_name[SEM_NAME_LEN];
-	size_t				last_eating_time;
-	int					meals;
-	t_all				*all;
+	size_t		id;
+	pid_t		pid;
+	sem_t		*death_sem;
+	char		*death_sem_name[SEM_NAME_LEN];
+	size_t		last_eating_time;
+	int			meals;
+	t_all		*all;
 }				t_philo;
 
 /*				philo.c */
