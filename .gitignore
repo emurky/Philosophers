@@ -4,5 +4,7 @@
 *.a
 *test*
 *.txt
+philo
+philo_bonus
 !/philo
 !/philo_bonus
