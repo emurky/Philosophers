@@ -12,25 +12,24 @@
 
 #include "philo_bonus.h"
 
-// bool	clean_philos(t_all *all, t_philo *philos)
-// {
-// 	size_t	i;
+void	clean_philos(t_all *all, t_philo *philos)
+{
+	size_t	i;
 
-// 	i = 0;
-// 	while (i < all->philo_count)
-// 	{
-// 		if (pthread_mutex_destroy(&all->forks[i]))
-// 			return (print_error(ERR_MTX_DSTR, philos, all->forks));
-// 		if (pthread_mutex_destroy(&philos[i].death_mtx))
-// 			return (print_error(ERR_MTX_DSTR, philos, all->forks));
-// 		i++;
-// 	}
-// 	if (pthread_mutex_destroy(&all->finish_mtx))
-// 		return (print_error(ERR_MTX_DSTR, philos, all->forks));
-// 	free(philos);
-// 	free(all->forks);
-// 	return (true);
-// }
+	i = 0;
+	while (i < all->philo_count)
+	{
+		sem_close(philos[i].death_sem);
+		sem_unlink((char *)philos[i].death_sem_name);
+		i++;
+	}
+	sem_close(all->print_sem);
+	sem_unlink("print_sem");
+	sem_close(all->forks);
+	sem_unlink("forks");
+	free(philos);
+	return ;
+}
 
 size_t	gettime_in_ms(void)
 {
@@ -53,15 +52,13 @@ void	usleep_wrapper(size_t ms)
 
 void	print_status(t_philo *philo, char *status)
 {
-	// pthread_mutex_lock(&philo->all->finish_mtx);
-	sem_wait(philo->all->finish_sem);
-	if (philo->all->finish == false)
-	{
-		printf("%zu %zu %s\n",
-			gettime_in_ms() - philo->all->start_time, philo->id, status);
-	}
-	sem_post(philo->all->finish_sem);
-	// pthread_mutex_unlock(&philo->all->finish_mtx);
+	sem_wait(philo->all->print_sem);
+	// if (philo->all->finish == false)
+	// {
+		printf("%zu %zu %s\n", gettime_in_ms() - philo->all->start_time, philo->id, status);
+	// }
+	if (*status != 'd')
+		sem_post(philo->all->print_sem);
 }
 
 bool	print_error(char *err_str, t_philo *philos)
@@ -71,4 +68,18 @@ bool	print_error(char *err_str, t_philo *philos)
 	write(2, "Error: ", 7);
 	write(2, err_str, ft_strlen(err_str));
 	return (false);
+}
+
+size_t	ft_nbrlen(long int n)
+{
+	size_t	len;
+
+	len = 1;
+	n /= 10;
+	while (n)
+	{
+		n /= 10;
+		len++;
+	}
+	return (len);
 }

@@ -30,13 +30,11 @@ int	main(int argc, char **argv)
 	philos = philos_init(&all);
 	if (!philos)
 		return (1);
-	if (!threads_init(philos, &all))
+	if (!processes_init(philos, &all))
 		return (1);
 	// check_philos(philos, &all);
-	// if (!threads_finish(philos, &all))
-	// 	return (1);
-	// if (!clean_philos(&all, philos))
-		// return (1);
+	processes_finish(philos, &all);
+	clean_philos(&all, philos);
 	return (0);
 }
 
@@ -58,13 +56,15 @@ bool	parser(char **argv, t_all *args)
 		return (false);
 	if (!args->philo_count)
 		return (print_error(ERR_PHILO, NULL));
-	if (args->philo_count > THREADS_LIMIT)
-		return (print_error(ERR_THREADS, NULL));
+	if (args->philo_count > SEM_VALUE_MAX)
+		return (print_error(ERR_SEM_VALUE, NULL));
+	if (args->philo_count > PROCESSES_LIMIT)
+		return (print_error(ERR_PROCESSES, NULL));
+	if (ft_nbrlen(PROCESSES_LIMIT) > SEM_NAME_LEN - 7)
+		return (print_error(ERR_SEM_LEN, NULL));
 	if (args->time_to_die < 10 || args->time_to_eat < 10
 		|| args->time_to_sleep < 10)
 		return (print_error(ERR_TIME, NULL));
-	// if (pthread_mutex_init(&args->finish_mtx, NULL))
-	// 	return (print_error(ERR_MTX_INIT, NULL, NULL));
 	return (true);
 }
 
@@ -72,6 +72,30 @@ sem_t	*sem_open_wrapper(const char *name, size_t count)
 {
 	sem_unlink(name);
 	return (sem_open(name, O_CREAT, 0644, count));
+}
+
+void	create_semaphore_name(t_philo *philo)
+{
+	size_t		i;
+	size_t		philo_id;
+	char		*name;
+	const char	*prefix = "philo_";
+
+	philo_id = philo->id;
+	name = (char *)philo->death_sem_name;
+	i = 0;
+	while (prefix[i])
+	{
+		name[i] = prefix[i];
+		i++;
+	}
+	while (philo_id > 0)
+	{
+		name[i] = (philo_id % 10) + '0';
+		philo_id /= 10;
+		i++;
+	}
+	name[i] = '\0';
 }
 
 t_philo	*philos_init(t_all *all)
@@ -82,70 +106,33 @@ t_philo	*philos_init(t_all *all)
 	i = 0;
 	philos = NULL;
 	philos = malloc(sizeof(t_philo) * all->philo_count);
-	// all->forks = malloc(sizeof(pthread_mutex_t) * all->philo_count);
-	// sem_unlink("forks");
-	// all->forks = sem_open("forks", O_CREAT, 0644, all->philo_count);
 	all->forks = sem_open_wrapper("forks", all->philo_count);
-	all->death_sem = sem_open_wrapper("death_sem", 1);
+	// all->death_sem = sem_open_wrapper("death_sem", 1);
+	all->print_sem = sem_open_wrapper("print_sem", 1);
 	if (!philos)
 		return ((t_philo *)print_error(ERR_MALLOC, philos));
 	all->start_time = gettime_in_ms();
 	while (i < all->philo_count)
 	{
-		// if (pthread_mutex_init(&all->forks[i], NULL)
-		// 	|| pthread_mutex_init(&philos[i].death_mtx, NULL))
-		// 	return ((t_philo *)print_error(ERR_MTX_INIT, philos, all->forks));
-
-		// philos[i].left_fork_mtx = &all->forks[i];
-		// philos[i].right_fork_mtx = &all->forks[(i + 1) % all->philo_count];
 		philos[i].id = i + 1;
 		philos[i].meals = 0;
 		philos[i].all = all;
-		philos[i].dead = false;
-		philos[i].last_eating_time = gettime_in_ms();
+		create_semaphore_name(&philos[i]);
+		philos[i].death_sem = sem_open_wrapper((char *)philos[i].death_sem_name, 1);
+		// philos[i].dead = false;
+		// philos[i].last_eating_time = gettime_in_ms();
 		i++;
 	}
 	return (philos);
 }
 
-// void	check_philos(t_philo *philos, t_all *all)
+// void	is_dead(t_philo *philo, t_all *all)
 // {
-// 	size_t		i;
-// 	bool		all_meals_eaten;
-
-// 	while (true)
-// 	{
-// 		i = 0;
-// 		all_meals_eaten = true;
-// 		while (i < all->philo_count)
-// 		{
-// 			pthread_mutex_lock(&philos[i].death_mtx);
-// 			if (gettime_in_ms() - philos[i].last_eating_time
-// 				> (size_t)all->time_to_die)
-// 				return (is_dead(&philos[i], all));
-// 			pthread_mutex_lock(&all->finish_mtx);
-// 			if (philos[i].meals < all->meals)
-// 				all_meals_eaten = false;
-// 			pthread_mutex_unlock(&all->finish_mtx);
-// 			pthread_mutex_unlock(&philos[i].death_mtx);
-// 			i++;
-// 		}
-// 		pthread_mutex_lock(&all->finish_mtx);
-// 		if (all->finish == true || (all_meals_eaten == true && all->meals >= 0))
-// 			return ((void)pthread_mutex_unlock(&all->finish_mtx));
-// 		pthread_mutex_unlock(&all->finish_mtx);
-// 	}
+// 	// philo->dead = true;
+// 	print_status(philo, STATUS_DEATH);
+// 	// sem_wait(all->finish_sem);
+// 	// all->finish = true;
+// 	// sem_post(all->finish_sem);
+// 	sem_post(all->death_sem);
+// 	exit(1);
 // }
-
-void	is_dead(t_philo *philo, t_all *all)
-{
-	philo->dead = true;
-	print_status(philo, STATUS_DEATH);
-	// pthread_mutex_lock(&all->finish_mtx);
-	sem_wait(all->finish_sem);
-	all->finish = true;
-	sem_post(all->finish_sem);
-	// pthread_mutex_unlock(&all->finish_mtx);
-	// pthread_mutex_unlock(&philo->death_mtx);
-	sem_post(all->death_sem);
-}
